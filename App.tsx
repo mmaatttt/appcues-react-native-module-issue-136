@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Button,
   SafeAreaView,
@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
+import * as Appcues from '@appcues/react-native';
 
 import {Header} from 'react-native/Libraries/NewAppScreen';
 
@@ -29,10 +30,34 @@ function App(): JSX.Element {
   const text = watch('text');
   const watchAll = watch();
 
+  const [initComplete, setInitComplete] = useState(false);
+
+  useEffect(() => {
+    const initializeSdk = async () => {
+      await Appcues.setup('103523', 'ca73c634-1978-46b4-b73d-eb3367a66925');
+      Appcues.debug();
+      setInitComplete(true);
+    };
+    initializeSdk();
+  }, []);
+
+  if (!initComplete) {
+    return null;
+  }
+
+  function identify(): void {
+    Appcues.identify('some-user');
+  }
+
+  function screen(): void {
+    Appcues.screen('my-screen');
+  }
   return (
     <SafeAreaView>
       <Header />
       <View>
+        <Button title="Trigger Appcues.identify()" onPress={identify} />
+        <Button title="Trigger Appcues.screen('my-screen')" onPress={screen} />
         <TextInput
           placeholder="plain input"
           value={plainInput}
