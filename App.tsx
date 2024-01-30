@@ -31,6 +31,7 @@ function App(): JSX.Element {
   const watchAll = watch();
 
   const [initComplete, setInitComplete] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const initializeSdk = async () => {
@@ -52,42 +53,52 @@ function App(): JSX.Element {
   function screen(): void {
     Appcues.screen('my-screen');
   }
+
+  function toggleForm(): void {
+    setShowForm(!showForm);
+  }
+
   return (
     <SafeAreaView>
       <Header />
       <View>
         <Button title="Trigger Appcues.identify()" onPress={identify} />
         <Button title="Trigger Appcues.screen('my-screen')" onPress={screen} />
-        <TextInput
-          placeholder="plain input"
-          value={plainInput}
-          onChangeText={value => onChangePlainInput(value)}
-          style={styles.input}
-        />
+        <Button title="Toggle form" onPress={toggleForm} />
 
-        <Controller
-          control={control}
-          name="text"
-          rules={{
-            required: {
-              value: true,
-              message: 'Field is required!',
-            },
-          }}
-          render={({field: {onChange, value, onBlur}}) => (
+        {showForm && (
+          <>
             <TextInput
-              placeholder="react-hook-form input"
-              value={value}
-              onBlur={onBlur}
-              onChangeText={value => onChange(value)}
+              placeholder="plain input"
+              value={plainInput}
+              onChangeText={value => onChangePlainInput(value)}
               style={styles.input}
             />
-          )}
-        />
-        <Text>Input value: {text}</Text>
-        <Text>Form value: {JSON.stringify(watchAll)}</Text>
+            <Controller
+              control={control}
+              name="text"
+              rules={{
+                required: {
+                  value: true,
+                  message: 'Field is required!',
+                },
+              }}
+              render={({field: {onChange, value, onBlur}}) => (
+                <TextInput
+                  placeholder="react-hook-form input"
+                  value={value}
+                  onBlur={onBlur}
+                  onChangeText={value => onChange(value)}
+                  style={styles.input}
+                />
+              )}
+            />
+            <Text>Input value: {text}</Text>
+            <Text>Form value: {JSON.stringify(watchAll)}</Text>
 
-        <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
